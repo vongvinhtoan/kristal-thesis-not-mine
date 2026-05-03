@@ -19,6 +19,7 @@ assert PROCESSED_DATA_DIR.is_dir()
 CLEANUP_DIR = PROCESSED_DATA_DIR / "cleanup"
 CLEANUP_DIR.mkdir(parents=True, exist_ok=True)
 
+
 for file in (DATA_DIR / "HOSE/Excel").iterdir():
     cleaned_up_path = CLEANUP_DIR / f"{file.stem}.parquet"
 
@@ -65,6 +66,32 @@ for file in (DATA_DIR / "HOSE/Excel").iterdir():
 
     df.write_parquet(cleaned_up_path)
 
-price_df = pl.concat([pl.read_parquet(f) for f in CLEANUP_DIR.glob("*.parquet")])
-price_df.write_parquet(PROCESSED_DATA_DIR / "price.parquet")
+
+price_df_path = PROCESSED_DATA_DIR / "price.parquet"
+if not price_df_path.exists():
+    price_df = pl.concat([pl.read_parquet(f) for f in CLEANUP_DIR.glob("*.parquet")])
+    price_df.write_parquet(PROCESSED_DATA_DIR / "price.parquet")
+else:
+    logger.info(f"Skipping {price_df_path.name}, already exists")
+
+
+icb_df_path = PROCESSED_DATA_DIR / "icb.parquet"
+if not icb_df_path.exists():
+    rename_mapping = {
+        "Mã": "ticker",
+        "Phân ngành - ICB L1": "icb1",
+        "Phân ngành - ICB L2": "icb2",
+        "Phân ngành - ICB L3": "icb3",
+        "Phân ngành - ICB L4": "icb4",
+        "Phân ngành - ICB L5": "icb5",
+    }
+
+    icb_df = (
+        pl.read_excel(DATA_DIR / "INFO/ICB.xlsx", columns=list(rename_mapping.keys()))
+        .rename(rename_mapping)
+        .filter(pl.col("ticker") != "")
+    )
+    icb_df.write_parquet(icb_df_path)
+else:
+    logger.info(f"Skipping {icb_df_path.name}, already exists")
 
