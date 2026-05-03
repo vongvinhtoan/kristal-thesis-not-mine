@@ -164,3 +164,18 @@ if not financials_df_path.exists():
     logger.info(f"Saved {financials_df_path.name} ({financials_df.height} rows)")
 else:
     logger.info(f"Skipping {financials_df_path.name}, already exists")
+
+
+gpr_index_df_path = PROCESSED_DATA_DIR / "gpr_index.parquet"
+if not gpr_index_df_path.exists():
+    gpr_index_df = pl.read_excel(
+        DATA_DIR / "data_gpr_export.xls", columns=["month", "GPR", "GPRT", "GPRA"]
+    ).with_columns([
+        pl.col("month"),
+        pl.col("GPR").cast(pl.Float64),
+        pl.col("GPRA").cast(pl.Float64),
+        pl.col("GPRT").cast(pl.Float64),
+    ])
+    gpr_index_df.write_parquet(gpr_index_df_path)
+else:
+    logger.info(f"Skipping {gpr_index_df_path.name}, already exists")
