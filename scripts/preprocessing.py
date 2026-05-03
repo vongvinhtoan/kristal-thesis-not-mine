@@ -96,15 +96,15 @@ else:
     logger.info(f"Skipping {icb_df_path.name}, already exists")
 
 
-CLEANUP_BCTC_DIR = CLEANUP_DIR / "bctc"
-CLEANUP_BCTC_DIR.mkdir(exist_ok=True, parents=True)
+CLEANUP_FINANCIALS_DIR = CLEANUP_DIR / "financials"
+CLEANUP_FINANCIALS_DIR.mkdir(exist_ok=True, parents=True)
 for file in (DATA_DIR / "BCTC/XLXS").iterdir():
-    cleaned_up_path = CLEANUP_BCTC_DIR / f"{file.stem}.parquet"
+    cleaned_up_path = CLEANUP_FINANCIALS_DIR / f"{file.stem}.parquet"
 
     if not file.is_file() or file.suffix != ".xlsx":
         continue
     if cleaned_up_path.exists():
-        logger.info(f"[BCTC] Skipping {file.name}, already processed")
+        logger.info(f"[FINANCIALS] Skipping {file.name}, already processed")
         continue
 
     rename_mapping = {
@@ -149,18 +149,18 @@ for file in (DATA_DIR / "BCTC/XLXS").iterdir():
         .select(list(set(rename_mapping.values())))
     )
 
-    logger.info(f"[BCTC] Saving cleaned up data to {cleaned_up_path}")
+    logger.info(f"[FINANCIALS] Saving cleaned up data to {cleaned_up_path}")
 
     df.write_parquet(cleaned_up_path)
 
-bctc_df_path = PROCESSED_DATA_DIR / "bctc.parquet"
-if not bctc_df_path.exists():
-    bctc_df = pl.concat(
-        [pl.read_parquet(f) for f in CLEANUP_BCTC_DIR.glob("*.parquet")]
+financials_df_path = PROCESSED_DATA_DIR / "financials.parquet"
+if not financials_df_path.exists():
+    financials_df = pl.concat(
+        [pl.read_parquet(f) for f in CLEANUP_FINANCIALS_DIR.glob("*.parquet")]
     ).filter(
         pl.col("ticker").is_not_null() & pl.col("exchange").is_in(["HNX", "HOSE"])
     )
-    bctc_df.write_parquet(bctc_df_path)
-    logger.info(f"Saved {bctc_df_path.name} ({bctc_df.height} rows)")
+    financials_df.write_parquet(financials_df_path)
+    logger.info(f"Saved {financials_df_path.name} ({financials_df.height} rows)")
 else:
-    logger.info(f"Skipping {bctc_df_path.name}, already exists")
+    logger.info(f"Skipping {financials_df_path.name}, already exists")
