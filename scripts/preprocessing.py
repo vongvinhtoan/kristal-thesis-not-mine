@@ -73,6 +73,7 @@ if not price_df_path.exists():
     price_df.write_parquet(PROCESSED_DATA_DIR / "price.parquet")
 else:
     logger.info(f"Skipping {price_df_path.name}, already exists")
+    price_df = pl.read_parquet(price_df_path)
 
 
 icb_df_path = PROCESSED_DATA_DIR / "icb.parquet"
@@ -94,6 +95,7 @@ if not icb_df_path.exists():
     icb_df.write_parquet(icb_df_path)
 else:
     logger.info(f"Skipping {icb_df_path.name}, already exists")
+    icb_df = pl.read_parquet(icb_df_path)
 
 
 CLEANUP_FINANCIALS_DIR = CLEANUP_DIR / "financials"
@@ -146,7 +148,7 @@ for file in (DATA_DIR / "BCTC/XLXS").iterdir():
     df = (
         pl.read_excel(file)
         .rename(rename_mapping, strict=False)
-        .select(list(set(rename_mapping.values())))
+        .select(list(set(rename_mapping.values())) + ["year"])
     )
 
     logger.info(f"[FINANCIALS] Saving cleaned up data to {cleaned_up_path}")
@@ -157,9 +159,7 @@ financials_df_path = PROCESSED_DATA_DIR / "financials.parquet"
 if not financials_df_path.exists():
     financials_df = pl.concat(
         [pl.read_parquet(f) for f in CLEANUP_FINANCIALS_DIR.glob("*.parquet")]
-    ).filter(
-        pl.col("ticker").is_not_null() & pl.col("exchange").is_in(["HNX", "HOSE"])
-    )
+    ).filter(pl.col("ticker").is_not_null() & pl.col("exchange").is_in(["HNX", "HOSE"]))
     financials_df.write_parquet(financials_df_path)
     logger.info(f"Saved {financials_df_path.name} ({financials_df.height} rows)")
 else:
@@ -170,12 +170,55 @@ gpr_index_df_path = PROCESSED_DATA_DIR / "gpr_index.parquet"
 if not gpr_index_df_path.exists():
     gpr_index_df = pl.read_excel(
         DATA_DIR / "data_gpr_export.xls", columns=["month", "GPR", "GPRT", "GPRA"]
-    ).with_columns([
-        pl.col("month"),
-        pl.col("GPR").cast(pl.Float64),
-        pl.col("GPRA").cast(pl.Float64),
-        pl.col("GPRT").cast(pl.Float64),
-    ])
+    ).with_columns(
+        [
+            pl.col("month"),
+            pl.col("GPR").cast(pl.Float64),
+            pl.col("GPRA").cast(pl.Float64),
+            pl.col("GPRT").cast(pl.Float64),
+        ]
+    )
     gpr_index_df.write_parquet(gpr_index_df_path)
 else:
     logger.info(f"Skipping {gpr_index_df_path.name}, already exists")
+
+
+shares_df = (
+    price_df.drop_nulls("ticker")
+    .with_columns(
+        year=pl.col("date").dt.year(),
+        month=pl.col("date").dt.month(),
+    )
+    .with_columns(
+        pl.when(pl.col("shares") != 0)
+        .then(pl.col("shares"))
+        .otherwise(None)
+        .alias("shares")
+    )
+    .sort(["ticker", "date"])
+    .group_by(["ticker", "year"])
+    .agg(yearend_shares=pl.col("shares").last(ignore_nulls=True))
+)
+
+print(shares_df.describe())
+shares_df.write_parquet(PROCESSED_DATA_DIR / "shares.parquet")
+
+turnover_df = (
+    price_df.filter(pl.col("ticker").is_not_null() & (pl.col("ticker") != ""))
+    .with_columns(
+        year=pl.col("date").dt.year(),
+        month=pl.col("date").dt.month(),
+        shares=pl.when(pl.col("shares") != 0).then(pl.col("shares")).otherwise(None),
+    )
+    .sort(["ticker", "date"])
+    .group_by(["ticker", "year", "month"])
+    .agg(volume=pl.col("volume").sum(), shares=pl.col("shares").last(ignore_nulls=True))
+    .join(shares_df, on=["ticker", "year"], how="inner")
+    .with_columns(shares=pl.col("shares").fill_null(pl.col("yearend_shares")))
+    .with_columns(turnover=pl.col("volume") / pl.col("shares"))
+    .group_by(["ticker", "year"])
+    .agg(turnover=pl.col("turnover").mean())
+)
+
+print(turnover_df.describe())
+turnover_df.write_parquet(PROCESSED_DATA_DIR / "turnover.parquet")
