@@ -109,5 +109,26 @@ controls_df = (
     )
 )
 
-print("\n".join(controls_df.columns))
+gpr_df = pl.read_excel(DATA_DIR / "data_gpr_export.xls")
+gpr_df = (
+    gpr_df.select("GPR", "GPRA", "GPRT", "month")
+    .with_columns(pl.col("GPR", "GPRA", "GPRT").cast(pl.Float64, strict=False))
+    .group_by(pl.col("month").dt.year().alias("year"))
+    .agg([pl.col("GPR").mean(), pl.col("GPRA").mean(), pl.col("GPRT").mean()])
+    .sort("year")
+)
+
+
+gpr_df.write_parquet(PROCESSED_DATA_DIR / "gpr.parquet")
+
 controls_df.write_parquet(PROCESSED_DATA_DIR / "controls.parquet")
+
+obs_df = (
+    controls_df.join(
+        gpr_df, 
+        on="year", 
+        how="left"
+    )
+)
+
+obs_df.write_parquet(PROCESSED_DATA_DIR / "obs_data.parquet")
