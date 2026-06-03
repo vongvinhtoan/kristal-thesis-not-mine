@@ -52,9 +52,10 @@ print(reg_df_pl.describe())
 reg_df = reg_df_pl.to_pandas()
 reg_df = reg_df.set_index(["ticker", "year"])
 
-# Print Correlation Matrix
+# =========================================================
+# PRINT CORRELATION MATRIX
+# =========================================================
 # 1. Define the variables in the exact order you want them in the matrix
-# Mapping the dataset names to the presentation names from the image
 correlation_vars = [
     "NCSKEW",
     "DUVOL",
@@ -124,7 +125,6 @@ for i in range(n_vars):
 
 # 4. Print or save the output
 print(f"\n{'#' * 70}\n### CORRELATION MATRIX\n{'#' * 70}")
-# Configure pandas to display multiline strings nicely inside columns
 pd.set_option("display.max_colwidth", None)
 print(matrix_df.to_string())
 
@@ -179,3 +179,33 @@ for y_var in dep_vars:
     res_split_firm = mod_split_firm.fit(cov_type="clustered", cluster_entity=True)
     print("\n--- Model B2: Firm FE (Split) ---")
     print(res_split_firm.summary)
+
+# =========================================================
+# SET C: 2SLS REGRESSION (Using IV2SLS Formula Interface)
+# =========================================================
+print(f"\n{'#' * 70}")
+print("### PART C: 2SLS / INSTRUMENTAL VARIABLE REGRESSION")
+print(f"{'#' * 70}")
+
+# 1. Construct the instrument in the polars frame before mapping to numpy
+# to keep proper alignment, then drop null values.
+reg_df["LGPR"] = reg_df_pl["GPR"].shift(1).to_numpy()
+
+# CRITICAL: Reset index so 'ticker' becomes an accessible column for the formula parser
+reg_df_iv = reg_df.dropna(subset=["LGPR"]).reset_index()
+
+controls_str = " + ".join(base_controls)
+
+for y_var in dep_vars:
+    print(f"\n{'-' * 50}\n 2SLS MODEL FOR DEPENDENT VARIABLE: {y_var}\n{'-' * 50}")
+
+    # Use C(ticker) to treat tickers as categorical elements (Firm Fixed Effects)
+    formula_firm = f"{y_var} ~ 1 + {controls_str} + C(ticker) + [GPR ~ LGPR]"
+
+    mod_iv_firm = IV2SLS.from_formula(formula_firm, data=reg_df_iv)
+
+    # For cross-sectional IV2SLS, pass the actual cluster array to the 'clusters' keyword
+    res_iv_firm = mod_iv_firm.fit(cov_type="clustered", clusters=reg_df_iv["ticker"])
+
+    print("\n--- Model C1: Firm FE (2SLS) Summary ---")
+    print(res_iv_firm.summary)
