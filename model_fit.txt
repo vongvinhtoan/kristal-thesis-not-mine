@@ -1,3 +1,4 @@
+Number of distinct tickers: 614
 
 ######################################################################
 ### Observations
@@ -20,6 +21,22 @@ shape: (9, 18)
 └────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴──────────┴───────────┴──────────┴───────────┴────────────┴───────────┴────────────┴────────────┴────────────┴────────┴─────────────┴───────────────────────────────┘
 
 ######################################################################
+### CORRELATION MATRIX
+######################################################################
+                              (1)                 (2)                 (3)                 (4)                 (5)                 (6)                 (7)                (8)                 (9)               (10)   (11)
+(1)NCSKEW_t                 1.000                                                                                                                                                                                         
+(2)DUVOL_t      0.907***\n(0.000)               1.000                                                                                                                                                                     
+(3)RM_t-1      -0.090***\n(0.000)  -0.120***\n(0.000)               1.000                                                                                                                                                 
+(4)SIZE_t-1    -0.056***\n(0.000)  -0.051***\n(0.001)  -0.065***\n(0.000)               1.000                                                                                                                             
+(5)MTB_t-1      0.078***\n(0.000)   0.086***\n(0.000)  -0.049***\n(0.001)   0.117***\n(0.000)               1.000                                                                                                         
+(6)LEVRG_t-1      -0.014\n(0.356)     -0.019\n(0.207)     -0.006\n(0.677)   0.380***\n(0.000)      0.017\n(0.251)               1.000                                                                                     
+(7)ROA_t-1      0.047***\n(0.002)   0.058***\n(0.000)  -0.055***\n(0.000)  -0.063***\n(0.000)   0.168***\n(0.000)  -0.348***\n(0.000)               1.000                                                                 
+(8)ABACC_t-1       0.008\n(0.573)      0.011\n(0.448)     -0.009\n(0.547)   -0.033**\n(0.026)      0.012\n(0.417)   0.050***\n(0.001)  -0.045***\n(0.003)              1.000                                              
+(9)RET_t-1      0.147***\n(0.000)   0.184***\n(0.000)  -0.535***\n(0.000)   0.061***\n(0.000)    0.032**\n(0.035)      0.007\n(0.653)   0.048***\n(0.001)    -0.024\n(0.107)               1.000                          
+(10)STDEV_t-1   0.109***\n(0.000)   0.116***\n(0.000)      0.022\n(0.137)  -0.319***\n(0.000)  -0.064***\n(0.000)    0.034**\n(0.024)  -0.216***\n(0.000)  0.106***\n(0.000)  -0.104***\n(0.000)              1.000       
+(11)DTURN_t-1   0.078***\n(0.000)   0.081***\n(0.000)  -0.072***\n(0.000)    0.038**\n(0.012)   0.052***\n(0.001)   0.048***\n(0.001)      0.024\n(0.115)     0.006\n(0.703)   0.049***\n(0.001)  0.133***\n(0.000)  1.000
+
+######################################################################
 ### DEPENDENT VARIABLE: NCSKEW
 ######################################################################
 
@@ -33,8 +50,8 @@ shape: (9, 18)
 Dep. Variable:                 NCSKEW   R-squared:                        0.0546
 Estimator:                   PanelOLS   R-squared (Between):             -0.0601
 No. Observations:                4429   R-squared (Within):               0.0644
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0533
-Time:                        11:02:04   Log-likelihood                   -5954.4
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0533
+Time:                        00:46:17   Log-likelihood                   -5954.4
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      25.409
 Entities:                         614   P-value                           0.0000
@@ -79,8 +96,8 @@ Avg Obs: 276.81, Min Obs: 6.0000, Max Obs: 662.00, Groups: 16
 Dep. Variable:                 NCSKEW   R-squared:                        0.0798
 Estimator:                   PanelOLS   R-squared (Between):             -0.2265
 No. Observations:                4429   R-squared (Within):               0.0798
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0353
-Time:                        11:02:04   Log-likelihood                   -5592.8
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0353
+Time:                        00:46:17   Log-likelihood                   -5592.8
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      32.997
 Entities:                         614   P-value                           0.0000
@@ -126,8 +143,8 @@ Included effects: Entity
 Dep. Variable:                 NCSKEW   R-squared:                        0.0571
 Estimator:                   PanelOLS   R-squared (Between):             -0.0667
 No. Observations:                4429   R-squared (Within):               0.0673
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0556
-Time:                        11:02:04   Log-likelihood                   -5948.4
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0556
+Time:                        00:46:17   Log-likelihood                   -5948.4
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      24.249
 Entities:                         614   P-value                           0.0000
@@ -173,8 +190,8 @@ Avg Obs: 276.81, Min Obs: 6.0000, Max Obs: 662.00, Groups: 16
 Dep. Variable:                 NCSKEW   R-squared:                        0.0829
 Estimator:                   PanelOLS   R-squared (Between):             -0.2769
 No. Observations:                4429   R-squared (Within):               0.0829
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0307
-Time:                        11:02:04   Log-likelihood                   -5585.3
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0307
+Time:                        00:46:17   Log-likelihood                   -5585.3
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      31.260
 Entities:                         614   P-value                           0.0000
@@ -225,8 +242,8 @@ Included effects: Entity
 Dep. Variable:                  DUVOL   R-squared:                        0.0750
 Estimator:                   PanelOLS   R-squared (Between):             -0.0871
 No. Observations:                4429   R-squared (Within):               0.0905
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0737
-Time:                        11:02:04   Log-likelihood                   -5024.2
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0737
+Time:                        00:46:17   Log-likelihood                   -5024.2
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      35.680
 Entities:                         614   P-value                           0.0000
@@ -271,8 +288,8 @@ Avg Obs: 276.81, Min Obs: 6.0000, Max Obs: 662.00, Groups: 16
 Dep. Variable:                  DUVOL   R-squared:                        0.1014
 Estimator:                   PanelOLS   R-squared (Between):             -0.2344
 No. Observations:                4429   R-squared (Within):               0.1014
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0602
-Time:                        11:02:04   Log-likelihood                   -4716.0
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0602
+Time:                        00:46:17   Log-likelihood                   -4716.0
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      42.914
 Entities:                         614   P-value                           0.0000
@@ -318,8 +335,8 @@ Included effects: Entity
 Dep. Variable:                  DUVOL   R-squared:                        0.0789
 Estimator:                   PanelOLS   R-squared (Between):             -0.0939
 No. Observations:                4429   R-squared (Within):               0.0944
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0771
-Time:                        11:02:04   Log-likelihood                   -5014.8
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0771
+Time:                        00:46:17   Log-likelihood                   -5014.8
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      34.268
 Entities:                         614   P-value                           0.0000
@@ -365,8 +382,8 @@ Avg Obs: 276.81, Min Obs: 6.0000, Max Obs: 662.00, Groups: 16
 Dep. Variable:                  DUVOL   R-squared:                        0.1059
 Estimator:                   PanelOLS   R-squared (Between):             -0.3471
 No. Observations:                4429   R-squared (Within):               0.1059
-Date:                Mon, May 11 2026   R-squared (Overall):              0.0502
-Time:                        11:02:04   Log-likelihood                   -4704.9
+Date:                Thu, Jun 04 2026   R-squared (Overall):              0.0502
+Time:                        00:46:17   Log-likelihood                   -4704.9
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      40.942
 Entities:                         614   P-value                           0.0000
@@ -402,3 +419,11 @@ P-value: 0.3251
 Distribution: F(613,3804)
 
 Included effects: Entity
+
+######################################################################
+### PART C: 2SLS / INSTRUMENTAL VARIABLE REGRESSION
+######################################################################
+
+--------------------------------------------------
+ 2SLS MODEL FOR DEPENDENT VARIABLE: NCSKEW
+--------------------------------------------------
